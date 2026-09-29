@@ -28,4 +28,4 @@ function incrementPriceOfBooks(libros, porcentaje) {
 }
 ```
 
-Es mejor la versión con map y ...libro porque crea un array con copias de los libros. Así conservamos los precios originales.
+map crea un array nuevo y ...libro copia cada libro. Así cambiamos el precio de la copia y conservamos el original.
