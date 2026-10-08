@@ -1,31 +1,21 @@
-# Auditoría
+# AUDITORÍA
 
-## booksNotSold
+## removeBook
 
-El código usa un for y en esta práctica no podemos usarlo.
-Además, los libros sin vender tienen soldDate vacío (''),
-no null. Por eso la condición no funciona como esperamos.
+El problema es que si la id no existe, no lanza ningún error.
 
-Lo corregimos con filter:
+La solución es comprobar primero si el libro existe y, si no existe lanzar una excepción.
 
-```js
-function booksNotSold(libros) {
-    return libros.filter(libro => libro.soldDate === '');
-}
-```
+## addBook
 
-## incrementPriceOfBooks modificando el original
+El problema es usar `this.data.length + 1` para crear la id, porque puede repetir ids si antes se ha eliminado algún libro.
 
-Esta versión cambia el precio directamente en los libros originales:
+La solución es usar un contador para asignar nuevas ids.
 
-```js
-function incrementPriceOfBooks(libros, porcentaje) {
-    libros.forEach(libro => {
-        libro.price = libro.price + libro.price * porcentaje / 100;
-    });
+## changeBook
 
-    return libros;
-}
-```
+El problema es que no comprueba si la id existe.
 
-map crea un array nuevo y ...libro copia cada libro. Así cambiamos el precio de la copia y conservamos el original.
+Además, guarda `newData` directamente, que es un objeto normal y no una instancia de `Book`.
+
+La solución es comprobar primero la id y crear un nuevo `Book` con los datos recibidos.
