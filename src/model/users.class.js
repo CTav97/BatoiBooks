@@ -1,59 +1,52 @@
 import User from './user.class.js'
+import { getUsers, postUser, deleteUser, putUser } from '../services/api.js'
 
 export default class Users {
 
     constructor() {
         this.data = []
-        this.contador = 1
     }
 
-    populate(usersData) {
-        this.data = usersData.map(user =>
-            new User(user.id, user.nick, user.email, user.password)
-        )
-
-        if (this.data.length > 0) {
-            this.contador = Math.max(...this.data.map(user => user.id)) + 1
-        }
-    }
-
-    addUser(userData) {
-        const newUser = new User(
-            this.contador,
+    toUser(userData) {
+        return new User(
+            userData.id,
             userData.nick,
             userData.email,
             userData.password
         )
+    }
+    async fetchAll() {
+        const usersData = await getUsers()
+
+        this.data = usersData.map(user => this.toUser(user))
+
+        return this.data
+    }
+
+    async addUser(userData) {
+        const savedUser = await postUser(userData)
+
+        const newUser = this.toUser(savedUser)
 
         this.data.push(newUser)
-        this.contador++
 
         return newUser
     }
 
-    removeUser(userId) {
-        const index = this.data.findIndex(user => user.id === userId)
+    async removeUser(userId) {
+        await deleteUser(userId)
 
-        if (index === -1) {
-            throw new Error('Usuario no encontrado')
-        }
+        const index = this.getUserIndexById(userId)
 
         this.data.splice(index, 1)
     }
 
-    changeUser(newData) {
-        const index = this.data.findIndex(user => user.id === newData.id)
+    async changeUser(newData) {
+        const savedUser = await putUser(newData)
 
-        if (index === -1) {
-            throw new Error('Usuario no encontrado')
-        }
+        const index = this.getUserIndexById(newData.id)
 
-        const changedUser = new User(
-            newData.id,
-            newData.nick,
-            newData.email,
-            newData.password
-        )
+        const changedUser = this.toUser(savedUser)
 
         this.data[index] = changedUser
 
@@ -61,13 +54,9 @@ export default class Users {
     }
 
     getUserById(id) {
-        const user = this.data.find(user => user.id === id)
+        const index = this.getUserIndexById(id)
 
-        if (user === undefined) {
-            throw new Error(`No existe el usuario con id ${id}`)
-        }
-
-        return user
+        return this.data[index]
     }
 
     getUserIndexById(id) {
@@ -81,7 +70,13 @@ export default class Users {
     }
 
     getUserByNickName(nick) {
-        return this.data.find(user => user.nick === nick)
+        const user = this.data.find(user => user.nick === nick)
+
+        if (user === undefined) {
+            throw new Error(`No existe el usuario con nick ${nick}`)
+        }
+
+        return user
     }
 
     toString() {

@@ -1,50 +1,47 @@
 import Book from './book.class.js'
+import { deleteBook, getBooks, postBook, putBook } from '../services/api.js'
 
 export default class Books {
 
     constructor() {
         this.data = []
-        this.contador = 1
     }
 
-    populate(booksData) {
+    async fetchAll() {
+        const booksData = await getBooks()
+
         this.data = booksData.map(book => new Book(book))
 
-        if (this.data.length > 0) {
-            this.contador = Math.max(...this.data.map(book => book.id)) + 1
-        }
-    }
 
-    addBook(bookData) {
-        const newBook = new Book({
-            ...bookData,
-            id: this.contador
-        })
+
+        return this.data
+
+
+    }
+    async addBook(bookData) {
+        const savedBook = await postBook(bookData)
+
+        const newBook = new Book(savedBook)
 
         this.data.push(newBook)
-        this.contador++
 
         return newBook
     }
 
-    removeBook(bookId) {
-        const index = this.data.findIndex(book => book.id === bookId)
+    async removeBook(bookId) {
+        await deleteBook(bookId)
 
-        if (index === -1) {
-            throw new Error('Libro no encontrado')
-        }
+        const index = this.getBookIndexById(bookId)
 
         this.data.splice(index, 1)
     }
 
-    changeBook(newData) {
-        const index = this.data.findIndex(book => book.id === newData.id)
+    async changeBook(newData) {
+        const savedBook = await putBook(newData)
 
-        if (index === -1) {
-            throw new Error('Libro no encontrado')
-        }
+        const index = this.getBookIndexById(newData.id)
 
-        const changedBook = new Book(newData)
+        const changedBook = new Book(savedBook)
 
         this.data[index] = changedBook
 
@@ -115,7 +112,7 @@ export default class Books {
     booksWithStatus(status) {
         return this.data.filter(libro => libro.status === status)
     }
-    
+
     toString() {
         return this.data
             .map(book => book.toString())
