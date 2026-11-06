@@ -1,8 +1,7 @@
 import './style.css'
 import logoBatoi from './assets/logoBatoi.png'
+import Controller from './controller/controller.class.js'
 
-import Books from './model/books.class.js'
-import Modules from './model/modules.class.js'
 
 document.querySelector('#app').innerHTML = `
   <header>
@@ -109,142 +108,8 @@ document.querySelector('#app').innerHTML = `
   </footer>
 `
 
-const books = new Books()
-const modules = new Modules()
-
 document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await modules.fetchAll()
-        await books.fetchAll()
+    const controller = new Controller()
 
-        renderModules()
-
-        books.data.forEach(book => renderBook(book))
-
-    } catch (error) {
-        showMessage('error', error.message)
-    }
-
-    document.getElementById('bookForm').addEventListener('submit', async (event) => {
-        event.preventDefault()
-
-        const bookData = {
-            userId: 1,
-            moduleCode: document.getElementById('moduleCode').value,
-            publisher: document.getElementById('publisher').value,
-            price: Number(document.getElementById('price').value),
-            pages: Number(document.getElementById('pages').value),
-            status: document.querySelector('input[name="status"]:checked').value,
-            photo: document.getElementById('photo').value,
-            comments: document.getElementById('comments').value,
-            soldDate: ''
-        }
-
-        try {
-            const newBook = await books.addBook(bookData)
-
-            renderBook(newBook)
-
-            showMessage('info', 'Libro añadido')
-        } catch (error) {
-            showMessage('error', error.message)
-        }
-
-
-    })
-
-    document.getElementById('remove-btn').addEventListener('click', async () => {
-        const input = document.getElementById('id-remove')
-
-        if (input.value === '') {
-            showMessage('error', 'Debes indicar un libro')
-            return
-        }
-
-
-        const bookId = Number(input.value)
-
-        try {
-            await books.removeBook(bookId)
-            const card = document.querySelector(`.card[data-id="${bookId}"]`)
-            card.remove()
-            showMessage('info', 'Libro eliminado')
-        } catch (error) {
-            showMessage('error', error.message)
-        }
-    })
+    await controller.init()
 })
-
-function renderBook(book) {
-    const module = modules.data.find(m => m.code === book.moduleCode)
-
-    const card = document.createElement('div')
-    card.className = 'card'
-    card.dataset.id = book.id
-
-    card.innerHTML = `
-    <img src="${book.photo}" alt="Libro: ${book.id}">
-    <div>
-        <h3>${module ? module.cliteral : book.moduleCode} (${book.id})</h3>
-        <h4>${book.publisher}</h4>
-        <p>${book.pages} páginas</p>
-        <p>Estado: ${book.status}</p>
-        <p>${formatSoldDate(book.soldDate)}</p>
-        <p>${book.comments}</p>
-        <h4>${book.price} €</h4>
-    </div>
-    `
-    document.getElementById('list').append(card)
-}
-
-function renderModules() {
-    const select = document.getElementById('moduleCode')
-
-    modules.data.forEach(module => {
-        const option = document.createElement('option')
-
-        option.value = module.code
-        option.textContent = module.cliteral
-
-        select.append(option)
-    })
-}
-
-function showMessage(type, text) {
-    const messages = document.getElementById('messages')
-
-    const message = document.createElement('div')
-    message.className = `alert alert-${type === 'error' ? 'danger' : 'info'}`
-    message.setAttribute('role', 'alert')
-
-    message.append(text)
-
-    const closeButton = document.createElement('button')
-    closeButton.type = 'button'
-    closeButton.className = 'btn-close'
-    closeButton.setAttribute('aria-label', 'Cerrar')
-    closeButton.textContent = 'x'
-
-    closeButton.addEventListener('click', () => {
-        message.remove()
-    })
-
-    message.append(closeButton)
-    messages.append(message)
-
-    if (type !== 'error') {
-        setTimeout(() => {
-            message.remove()
-        }, 3000)
-    }
-}
-
-function formatSoldDate(date) {
-    if (!date) {
-        return 'En venta'
-    }
-
-    const [year, month, day] = date.split('-')
-
-    return `Vendido el ${day}/${month}/${year}`
-}
