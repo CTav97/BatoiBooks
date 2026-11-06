@@ -1,21 +1,47 @@
-# AUDITORÍA
+# Auditoría de renderBook
 
-## removeBook
+## 1. Estado de venta mal comprobado
 
-El problema es que si la id no existe, no lanza ningún error.
+**1. Qué falla:**  
+La condición de `soldDate` está al revés. Si el libro tiene fecha pone "En venta" y si no tiene fecha pone "Vendido el".
 
-La solución es comprobar primero si el libro existe y, si no existe lanzar una excepción.
+**2. Cómo reproducirlo:**  
+Se puede probar con un libro que tenga fecha de venta y otro que no tenga.
 
-## addBook
+**3. Qué consecuencias tiene:**  
+Muestra información incorrecta al usuario.
 
-El problema es usar `this.data.length + 1` para crear la id, porque puede repetir ids si antes se ha eliminado algún libro.
+**4. Cómo lo he corregido:**  
+He hecho que si no hay fecha muestre "En venta" y si hay fecha muestre "Vendido el" junto con la fecha.
 
-La solución es usar un contador para asignar nuevas ids.
+---
 
-## changeBook
+## 2. Formato de la fecha
 
-El problema es que no comprueba si la id existe.
+**1. Qué falla:**  
+La fecha se muestra tal como viene del servidor, por ejemplo `2023-02-01`.
 
-Además, guarda `newData` directamente, que es un objeto normal y no una instancia de `Book`.
+**2. Cómo reproducirlo:**  
+Se puede probar mostrando cualquier libro que ya esté vendido.
 
-La solución es comprobar primero la id y crear un nuevo `Book` con los datos recibidos.
+**3. Qué consecuencias tiene:**  
+La fecha no aparece en el formato que pide la práctica.
+
+**4. Cómo lo he corregido:**  
+He creado una función que separa el año, el mes y el día y muestra la fecha como `01/02/2023`.
+
+---
+
+## 3. El módulo puede no existir
+
+**1. Qué falla:**  
+El código usa directamente `module.cliteral`. Si el módulo no existe, se produce un error.
+
+**2. Cómo reproducirlo:**  
+Se puede usar un libro cuyo `moduleCode` no exista en la lista de módulos.
+
+**3. Qué consecuencias tiene:**  
+La aplicación puede dar error al intentar mostrar ese libro.
+
+**4. Cómo lo he corregido:**  
+Compruebo primero si el módulo existe. Si existe muestro su nombre y si no existe muestro el código del módulo.
