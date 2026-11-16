@@ -9,7 +9,7 @@ document.querySelector('#app').innerHTML = `
         <img src="${logoBatoi}" alt="BatoiBooks">
         <h1>BatoiBooks</h1>
     </div>
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <nav>
       <ul>
         <li><a href="#list">Ver Libros</a></li>
@@ -17,6 +17,7 @@ document.querySelector('#app').innerHTML = `
         <li><a href="#about">Acerca de...</a></li>
       </ul>
     </nav>
+    <span id="cart-count">0</span>
   </header>
 
     <div id="messages">
@@ -26,14 +27,13 @@ document.querySelector('#app').innerHTML = `
     <main>
     <div id="list"></div>
 
-    <div id="remove">
-        <label for="id-remove">ID del libro:</label>
-        <input type="number" id="id-remove">
-        <button type="button" id="remove-btn">Eliminar</button>
-    </div>
-
     <div id="form">
        <form id="bookForm">
+
+        <div class="hidden">
+        <label for="id">ID</label>
+        <input type="number" id="id" name="id" readonly>
+        </div>
 
         <div>
             <label for="moduleCode">Módulo</label>
@@ -86,22 +86,30 @@ document.querySelector('#app').innerHTML = `
 
         <div>
             <label for="photo">Foto</label>
-            <input type="text" id="photo" name="photo" required>
+            <input type="text" id="photo" name="photo">
         </div>
 
         <div>
             <label for="comments">Comentarios</label>
-            <input type="text" id="comments" name="comments" required>
+            <input type="text" id="comments" name="comments">
         </div>
 
         <button type="submit">Guardar</button>
         <button type="reset">Reset</button>
+
+        <h2>Añadir libro</h2>
 
     </form>
 </div>
     <div id="about">
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis maximus laoreet nisi, id pretium mi eleifend quis.</p>
     </div>
+
+    <div id="not-found">
+        <p>La página no existe</p>
+        <a href="#list">Volver a la lista</a>
+    </div>
+
 </main>
   <footer>
     Clodoaldo
