@@ -59,7 +59,6 @@ export default class Controller {
     }
 
     async handleSubmitBook(bookData) {
-        console.log('Datos del formulario', bookData)
         try {
 
             if (bookData.id) {
