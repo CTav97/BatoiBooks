@@ -27,3 +27,11 @@ export default class Book {
         return `${this.id} - ${this.publisher} - ${this.price} - ${this.status}`
     }
 }
+
+import {
+    getBooks,
+    postBook,
+    deleteBook,
+    putBook,
+    getBooksByUserModule
+} from '../services/api.js'

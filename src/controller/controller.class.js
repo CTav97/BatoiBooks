@@ -31,6 +31,10 @@ export default class Controller {
             this.handleReset.bind(this)
         )
 
+        this.view.setModuleChangeHandler(
+            this.handleModuleChange.bind(this)
+        )
+
         try {
             await this.modules.fetchAll()
             await this.books.fetchAll()
@@ -188,22 +192,48 @@ export default class Controller {
     }
 
     handleAddToCart(bookId) {
-    const book = this.books.data.find(
-        book => book.id === bookId
-    )
+        const book = this.books.data.find(
+            book => book.id === bookId
+        )
 
-    try {
-        this.cart.addBook(book)
+        try {
+            this.cart.addBook(book)
 
-        this.view.updateCartCount(this.cart.data.length)
+            this.view.updateCartCount(this.cart.data.length)
 
-        this.view.showMessage('info', 'Libro añadido al carrito')
+            this.view.showMessage('info', 'Libro añadido al carrito')
 
-        console.log(this.cart.data)
+            console.log(this.cart.data)
 
-    } catch (error) {
-        this.view.showMessage('error', error.message)
+        } catch (error) {
+            this.view.showMessage('error', error.message)
+        }
     }
-}
+
+    async handleModuleChange(moduleCode) {
+        if (!moduleCode) {
+            this.view.clearModuleError()
+            return
+        }
+
+        try {
+            const exists = await this.books.bookExists(
+                USER_ID,
+                moduleCode
+            )
+
+            if (exists) {
+                this.view.setModuleError(
+                    'Ya tienes un libro de este módulo'
+                )
+            } else {
+                this.view.clearModuleError()
+            }
+
+        } catch (error) {
+            this.view.clearModuleError()
+            this.view.showMessage('error', error.message)
+        }
+    }
 
 }

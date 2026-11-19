@@ -286,3 +286,10 @@ footer {
         font-size: 2rem;
     }
 }
+
+.error {
+    display: block;
+    color: #ff6b6b;
+    margin-top: 5px;
+    font-size: 0.9rem;
+}

@@ -8,6 +8,12 @@ export default class View {
     }
 
     renderModules(modules) {
+        const emptyOption = document.createElement('option')
+        emptyOption.value = ''
+        emptyOption.textContent = '-- Selecciona un módulo --'
+
+        this.modulesSelect.append(emptyOption)
+
         modules.forEach(module => {
             const option = document.createElement('option')
 
@@ -115,6 +121,11 @@ export default class View {
         this.bookForm.addEventListener('submit', event => {
             event.preventDefault()
 
+            this.showValidationErrors()
+            if (!this.bookForm.checkValidity()) {
+                return
+            }
+
             const bookData = {
                 moduleCode: document.getElementById('moduleCode').value,
                 publisher: document.getElementById('publisher').value,
@@ -132,6 +143,33 @@ export default class View {
             }
 
             callback(bookData)
+        })
+
+        this.bookForm.addEventListener('input', event => {
+            const field = event.target
+
+            if (!['moduleCode', 'publisher', 'price', 'pages'].includes(field.name)) {
+                return
+            }
+
+            const error = document.getElementById(
+                `${field.name}-error`
+            )
+
+            error.textContent = this.customErrorValidationMessage(field)
+        })
+
+        this.bookForm.addEventListener('change', event => {
+            if (event.target.name !== 'status') {
+                return
+            }
+
+            const field = this.bookForm.querySelector(
+                'input[name="status"]'
+            )
+
+            document.getElementById('status-error').textContent =
+                this.customErrorValidationMessage
         })
     }
 
@@ -157,6 +195,7 @@ export default class View {
 
     showAddForm() {
         this.bookForm.reset()
+        this.clearValidationErrors()
 
         const idInput = this.bookForm.elements.namedItem('id')
         idInput.value = ''
@@ -167,6 +206,8 @@ export default class View {
 
     showEditForm(book) {
         document.querySelector('#form h2').textContent = 'Editar libro'
+
+        this.clearValidationErrors()
 
         const idInput = this.bookForm.elements.namedItem('id')
         idInput.parentElement.classList.remove('hidden')
@@ -208,6 +249,7 @@ export default class View {
 
     setResetHandler(callback) {
         this.bookForm.addEventListener('reset', () => {
+            this.clearValidationErrors()
             callback()
         })
     }
@@ -230,5 +272,105 @@ export default class View {
 
     updateCartCount(count) {
         document.getElementById('cart-count').textContent = count
+    }
+
+    customErrorValidationMessage(input) {
+        if (input.checkValidity()) {
+            return ''
+        }
+
+        if (input.validity.customError) {
+            return input.validationMessage
+        }
+
+        if (input.validity.valueMissing) {
+            return 'Este campo es obligatorio'
+        }
+
+        if (input.validity.rangeUnderflow) {
+            if (input.name === 'price') {
+                return 'El precio no puede ser negativo'
+            }
+
+            if (input.name === 'pages') {
+                return 'El número de páginas debe ser al menos 1'
+            }
+        }
+
+        if (input.validity.stepMismatch) {
+            if (input.name === 'price') {
+                return 'El precio puede tener como máximo dos decimales'
+            }
+
+            if (input.name === 'pages') {
+                return 'El número de páginas debe ser entero'
+            }
+        }
+
+        if (input.validity.badInput) {
+            return 'Debes introducir un número válido'
+        }
+
+        return 'Valor no válido'
+    }
+
+    showValidationErrors() {
+        const names = [
+            'moduleCode',
+            'publisher',
+            'price',
+            'pages',
+            'status'
+        ]
+
+        names.forEach(name => {
+
+            let field;
+
+            if (name === 'status') {
+                field = this.bookForm.querySelector(
+                    'input[name="status"]'
+                )
+            } else {
+                field = this.bookForm.elements.namedItem(name)
+            }
+
+            const error = document.getElementById(`${name}-error`)
+
+            error.textContent =
+                this.customErrorValidationMessage(field)
+        })
+    }
+
+    clearValidationErrors() {
+        const names = [
+            'moduleCode', 'publisher', 'price', 'pages', 'status'
+        ]
+
+        names.forEach(name => {
+            const error = document.getElementById(`${name}-error`)
+            error.textContent = ''
+        })
+    }
+
+    setModuleChangeHandler(callback) {
+        this.modulesSelect.addEventListener('change', () => {
+            this.clearModuleError()
+
+            callback(this.modulesSelect.value)
+        })
+    }
+
+    setModuleError(message) {
+        this.modulesSelect.setCustomValidity(message)
+
+        document.getElementById('moduleCode-error').textContent =
+            message
+    }
+
+    clearModuleError() {
+        this.modulesSelect.setCustomValidity('')
+
+        document.getElementById('moduleCode-error').textContent = ''
     }
 }

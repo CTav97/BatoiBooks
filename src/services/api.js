@@ -123,3 +123,17 @@ export {
     putUser,
     getModules
 }
+
+export async function getBookByUserModule(userId, moduleCode) {
+    const response = await fetch (
+        `${SERVER}/books?userId=${userId}&moduleCode=${moduleCode}` 
+    )
+
+    if(!response.ok) {
+        throw new Error (
+            `Error ${response.status}: ${response.statusText}`
+        )
+    }
+
+    return await response.json()
+}

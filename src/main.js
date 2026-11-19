@@ -28,7 +28,7 @@ document.querySelector('#app').innerHTML = `
     <div id="list"></div>
 
     <div id="form">
-       <form id="bookForm">
+       <form id="bookForm" novalidate>
 
         <div class="hidden">
         <label for="id">ID</label>
@@ -38,21 +38,25 @@ document.querySelector('#app').innerHTML = `
         <div>
             <label for="moduleCode">Módulo</label>
             <select id="moduleCode" name="moduleCode" required></select>
+            <span id="moduleCode-error" class="error"></span>
         </div>
 
         <div>
             <label for="publisher">Editorial</label>
             <input type="text" id="publisher" name="publisher" required>
+            <span id="publisher-error" class="error"></span>
         </div>
 
         <div>
             <label for="price">Precio</label>
-            <input type="number" id="price" name="price" required>
+            <input type="number" id="price" name="price" min="0" step="0.01" required>
+            <span id="price-error" class="error"></span>
         </div>
 
         <div>
             <label for="pages">Páginas</label>
-            <input type="number" id="pages" name="pages" required>
+            <input type="number" id="pages" name="pages" min="1" step="1" required>
+            <span id="pages-error" class="error"></span>
         </div>
 
         <div>
@@ -82,6 +86,7 @@ document.querySelector('#app').innerHTML = `
                 <input type="radio" name="status" value="digital" required>
                 Digital
             </label>
+            <span id="status-error" class="error"></span>
         </div>
 
         <div>

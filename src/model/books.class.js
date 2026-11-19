@@ -1,5 +1,6 @@
 import Book from './book.class.js'
-import { deleteBook, getBooks, postBook, putBook } from '../services/api.js'
+import { deleteBook, getBooks, postBook, putBook, getBookByUserModule } from '../services/api.js'
+
 
 export default class Books {
 
@@ -80,11 +81,10 @@ export default class Books {
         return this.data.filter(libro => libro.publisher === 'Apunts');
     }
 
-    bookExists(idUsuario, codigoModulo) {
-        return this.data.some(libro =>
-            libro.userId === idUsuario && libro.moduleCode === codigoModulo
-        );
-    }
+   async bookExists(userId, moduleCode) {
+    const books = await getBookByUserModule(userId, moduleCode)
+    return books.length > 0
+   }
 
     booksNotSold() {
         return this.data.filter(libro => libro.soldDate === '');
@@ -117,5 +117,13 @@ export default class Books {
         return this.data
             .map(book => book.toString())
             .join('\n')
+    }
+
+    async bookExistsS(userId, moduleCode) {
+        const books = await getBookByUserModule (
+            userId, moduleCode
+        )
+
+        return books.length > 0
     }
 }
